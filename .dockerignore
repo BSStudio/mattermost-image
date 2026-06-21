@@ -1,0 +1,7 @@
+# Build only needs the Dockerfile + external/mattermost-oidc. Keep the rest out
+# of the build context.
+*
+!external/mattermost-oidc
+# Drop the submodule's own git/CI cruft.
+external/mattermost-oidc/.git
+external/mattermost-oidc/.github

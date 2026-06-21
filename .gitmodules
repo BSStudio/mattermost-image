@@ -1,0 +1,3 @@
+[submodule "external/mattermost-oidc"]
+	path = external/mattermost-oidc
+	url = https://github.com/BSStudio/mattermost-oidc

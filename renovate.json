@@ -1,0 +1,44 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "schedule:monthly"],
+  "git-submodules": { "enabled": true },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["(^|/)Dockerfile$"],
+      "matchStrings": ["ARG MM_VERSION=(?<currentValue>\\S+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "mattermost/mattermost",
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "mattermost/mattermost",
+        "external/mattermost-oidc"
+      ],
+      "groupName": "mattermost upgrade",
+      "description": "Bump MM_VERSION and the OIDC submodule together — they must land in one PR"
+    },
+    {
+      "matchDatasources": ["github-releases"],
+      "matchPackageNames": ["mattermost/mattermost"],
+      "ignoreUnstable": true,
+      "matchCurrentVersion": "!/.*(rc|alpha|beta).*/i"
+    },
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["golang"],
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": false,
+      "description": "Go minor follows Mattermost's go.mod; bumped during an MM upgrade, not automatically"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "groupName": "github-actions",
+      "description": "Group non-major GitHub Actions updates in one PR; majors get their own PR to review breaking changes"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+# The Dockerfile RUN scripts (sed/grep/printf) run under /bin/sh in Linux; CRLF
+# would break them. Force LF on everything that is read by a shell or a Linux tool.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
