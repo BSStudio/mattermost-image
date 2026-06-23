@@ -41,5 +41,5 @@ jobs:
           platforms: linux/amd64
           push: ${{ github.event_name == 'push' }}
           tags: |
-            ghcr.io/bsstudio/mattermost:${{ steps.ver.outputs.mm }}
-            ghcr.io/bsstudio/mattermost:latest
+            ghcr.io/bsstudio/mattermost-team-edition:${{ steps.ver.outputs.mm }}
+            ghcr.io/bsstudio/mattermost-team-edition:latest
