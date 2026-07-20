@@ -1,13 +1,17 @@
 name: Build & publish Mattermost image
 
 on:
-  push: 
+  push:
     branches: [main]
   pull_request:
 
 permissions:
   contents: read
   packages: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build-and-publish:
@@ -16,7 +20,7 @@ jobs:
     steps:
       - name: Check out repo and OIDC submodule
         uses: actions/checkout@v7.0.0
-        with: 
+        with:
           submodules: recursive
 
       - name: Read Mattermost version from Dockerfile
@@ -34,12 +38,24 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Derive tags and OCI labels
+        id: meta
+        uses: docker/metadata-action@v6.2.0
+        with:
+          images: ghcr.io/bsstudio/mattermost-team-edition
+          tags: |
+            type=raw,value=${{ steps.ver.outputs.mm }}
+            type=raw,value=latest,enable={{is_default_branch}}
+
       - name: Build image (and push on main only)
         uses: docker/build-push-action@v7.2.0
         with:
           context: .
           platforms: linux/amd64
           push: ${{ github.event_name == 'push' }}
-          tags: |
-            ghcr.io/bsstudio/mattermost-team-edition:${{ steps.ver.outputs.mm }}
-            ghcr.io/bsstudio/mattermost-team-edition:latest
+          provenance: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
