@@ -1,6 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended", "schedule:monthly"],
+  "reviewersFromCodeOwners": true,
   "git-submodules": { "enabled": true },
   "customManagers": [
     {
