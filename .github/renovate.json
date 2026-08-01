@@ -1,0 +1,64 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":automergeDisabled",
+    ":disableRateLimiting",
+    ":enableVulnerabilityAlerts",
+    ":ignoreUnstable",
+    ":separateMajorReleases",
+    ":timezone(Europe/Budapest)",
+    "schedule:monthly"
+  ],
+  "configMigration": true,
+  "rebaseWhen": "conflicted",
+  "reviewersFromCodeOwners": true,
+  "git-submodules": { "enabled": true },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Bump ARG MM_VERSION in the Dockerfile from Mattermost's GitHub releases.",
+      "managerFilePatterns": ["(^|/)Dockerfile$"],
+      "matchStrings": ["ARG MM_VERSION=(?<currentValue>\\S+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "mattermost/mattermost",
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Bump MM_VERSION and the OIDC submodule together — they must land in one PR. separateMajorMinor:false keeps a major bump on the same branch as the submodule's digest update, which has no major/minor of its own.",
+      "matchPackageNames": ["mattermost/mattermost"],
+      "groupName": "mattermost upgrade",
+      "groupSlug": "mattermost-upgrade",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "Matched by manager, not name: a submodule's packageName is its clone URL, not its path, so matchPackageNames can't reach it.",
+      "matchManagers": ["git-submodules"],
+      "groupName": "mattermost upgrade",
+      "groupSlug": "mattermost-upgrade",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "Runtime FROM tag is derived from ARG MM_VERSION; the custom manager owns that line. Enabled, this dep would rewrite the same line a second time.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["mattermost/mattermost-team-edition"],
+      "enabled": false
+    },
+    {
+      "description": "Go minor follows Mattermost's go.mod; bumped during an MM upgrade, not automatically.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["golang"],
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": false
+    },
+    {
+      "description": "Group non-major GitHub Actions updates in one PR; majors get their own PR to review breaking changes.",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "groupName": "github-actions",
+      "groupSlug": "all-minor-patch-github-actions"
+    }
+  ]
+}
