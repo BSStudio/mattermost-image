@@ -3,7 +3,7 @@
 # Mattermost version (numeric, no leading v). Global ARG so the runtime FROM tag
 # resolves; re-declared in the build stage for RUN. Bumped by Renovate.
 # renovate: datasource=github-releases depName=mattermost/mattermost extractVersion=^v(?<version>.*)$
-ARG MM_VERSION=11.8.1
+ARG MM_VERSION=11.9.0
 
 # ---- build stage ----
 # Go minor must match Mattermost's go.mod (v11.8.1 => 1.26).
