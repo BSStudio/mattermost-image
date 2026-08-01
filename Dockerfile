@@ -6,7 +6,8 @@
 ARG MM_VERSION=11.9.0
 
 # ---- build stage ----
-# Go minor must match Mattermost's go.mod (v11.8.1 => 1.26).
+# Go minor must match Mattermost's go.mod (v11.9.0 => 1.26); the patch version is
+# read from go.mod at build time (see go.work below), the minor is pinned here.
 FROM golang:1.26-alpine AS build
 RUN apk add --no-cache git make bash build-base
 ARG MM_VERSION
@@ -33,7 +34,16 @@ RUN set -eux; \
         server/cmd/mattermost/main.go
 
 WORKDIR /build
-RUN printf 'go 1.26.3\n\nuse (\n    ./mattermost/server\n    ./mattermost/server/public\n    ./mattermost-oidc\n)\n' > go.work
+# go.work's go directive must be >= every member module's, so derive it from the
+# modules instead of pinning: an MM_VERSION bump that moves the go directive would
+# otherwise strand a stale version here and fail the build below.
+RUN set -eux; \
+    gover="$(awk '/^go /{print $2}' \
+        mattermost/server/go.mod \
+        mattermost/server/public/go.mod \
+        mattermost-oidc/go.mod | sort -V | tail -1)"; \
+    printf 'go %s\n\nuse (\n    ./mattermost/server\n    ./mattermost/server/public\n    ./mattermost-oidc\n)\n' "$gover" > go.work; \
+    cat go.work
 WORKDIR /build/mattermost/server
 # Build directly, not via `make build`: its setup-go-work target clobbers our go.work.
 # CGO_ENABLED=0: static binary — built on alpine/musl, runs on the glibc base.
