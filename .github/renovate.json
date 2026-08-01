@@ -32,15 +32,17 @@
         "mattermost/mattermost",
         "mattermost/mattermost-team-edition"
       ],
-      "groupName": "mattermost upgrade",
+      "groupName": "Mattermost",
       "groupSlug": "mattermost-upgrade",
+      "commitMessageAction": "Upgrade",
       "separateMajorMinor": false
     },
     {
       "description": "Matched by manager, not name: a submodule's packageName is its clone URL, not its path, so matchPackageNames can't reach it.",
       "matchManagers": ["git-submodules"],
-      "groupName": "mattermost upgrade",
+      "groupName": "Mattermost",
       "groupSlug": "mattermost-upgrade",
+      "commitMessageAction": "Upgrade",
       "separateMajorMinor": false
     },
     {
