@@ -1,18 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
-    ":automergeDisabled",
-    ":disableRateLimiting",
-    ":enableVulnerabilityAlerts",
-    ":ignoreUnstable",
-    ":separateMajorReleases",
-    ":timezone(Europe/Budapest)",
-    "schedule:monthly"
+    "github>BSStudio/renovate-config",
+    "github>BSStudio/renovate-config:monthly"
   ],
-  "configMigration": true,
-  "rebaseWhen": "conflicted",
-  "reviewersFromCodeOwners": true,
   "git-submodules": { "enabled": true },
   "customManagers": [
     {
@@ -51,13 +42,6 @@
       "matchPackageNames": ["golang"],
       "matchUpdateTypes": ["major", "minor"],
       "enabled": false
-    },
-    {
-      "description": "Group non-major GitHub Actions updates in one PR; majors get their own PR to review breaking changes.",
-      "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["minor", "patch", "digest"],
-      "groupName": "github-actions",
-      "groupSlug": "all-minor-patch-github-actions"
     }
   ]
 }
