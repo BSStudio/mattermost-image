@@ -7,21 +7,30 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build-and-publish:
     name: Build patched server and push to GHCR
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Pull requests build without logging in or pushing, so the write scope is never used there.
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Check out repo and OIDC submodule
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: Read Mattermost version from Dockerfile
         id: ver
