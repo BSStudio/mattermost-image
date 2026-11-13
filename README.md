@@ -29,7 +29,7 @@ The Mattermost version is the single `ARG MM_VERSION` in the [Dockerfile](Docker
 
 ## CI
 
-[build.yml](.github/workflows/build.yml): pull requests build only; push to `main` builds and pushes `:<version>` and `:latest`. First push to `main` is manual after a green build and an OIDC login smoke test.
+[build.yml](.github/workflows/build.yml): pull requests build only; every push to `main` builds and pushes `:<version>` and `:latest`, so merge a Mattermost upgrade only after a green build and an OIDC login smoke test.
 
 ## Upgrading Mattermost
 
